@@ -30,25 +30,22 @@ namespace Events {
                                 if (!equipped_left && equipped_right) {
                                     const auto right_weap = equipped_right->As<RE::TESObjectWEAP>();
                                     if (right_weap->IsStaff()) {
-                                        auto is_blocking = false;
-                                        if (player->GetGraphVariableBool("IsBlocking"sv, is_blocking)) {
-                                            for (auto e = *a_event; e != nullptr; e = e->next) {
-                                                if (const auto button_event = e->AsButtonEvent()) {
-                                                    const auto device = button_event->GetDevice();
-                                                    if (button_event->GetIDCode() == control_map->GetMappedKey(
-                                                            RE::UserEvents::GetSingleton()->leftAttack, device)) {
-                                                        if (button_event->IsHeld()) {
-                                                            logger::info("Block held");
-                                                            right_weap->weaponData.animationType =
-                                                                RE::WEAPON_TYPE::kTwoHandAxe;
-                                                            RE::DebugNotification("Set staff anim type to two handed");
-                                                        }
-                                                        if (button_event->IsUp()) {
-                                                            logger::info("Block up");
-                                                            right_weap->weaponData.animationType =
-                                                                RE::WEAPON_TYPE::kStaff;
-                                                            RE::DebugNotification("Reset staff anim type to staff");
-                                                        }
+                                        for (auto e = *a_event; e != nullptr; e = e->next) {
+                                            if (const auto button_event = e->AsButtonEvent()) {
+                                                const auto device = button_event->GetDevice();
+                                                if (button_event->GetIDCode() == control_map->GetMappedKey(
+                                                        RE::UserEvents::GetSingleton()->leftAttack, device)) {
+                                                    if (button_event->IsHeld()) {
+                                                        logger::info("Block held");
+                                                        player->SetGraphVariableInt("iLeftHandType"sv, 6);
+                                                        player->SetGraphVariableInt("iRightHandType"sv, 6);
+                                                        RE::DebugNotification("Set iLeft/RightHandType to 6");
+                                                    }
+                                                    if (button_event->IsUp()) {
+                                                        logger::info("Block up");
+                                                        player->SetGraphVariableInt("iLeftHandType"sv, 0);
+                                                        player->SetGraphVariableInt("iRightHandType"sv, 8);
+                                                        RE::DebugNotification("Set iLeft/RightHandType to 8");
                                                     }
                                                 }
                                             }
